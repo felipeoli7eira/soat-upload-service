@@ -1,0 +1,83 @@
+services:
+    upload_nginx:
+        image: nginx
+        container_name: soat-upload-nginx
+        ports:
+            - 8001:80
+        hostname: soat-upload-nginx-hostname
+        restart: on-failure:3
+        volumes:
+            - ./docker/containers/nginx/nginx.conf:/etc/nginx/nginx.conf
+            - ./application:/var/www/html
+        depends_on:
+            upload:
+                condition: service_healthy
+                restart: true
+
+    upload:
+        container_name: soat-upload
+        hostname: soat-upload-hostname
+        build:
+            context: .
+            dockerfile: ./docker/images/php/Dockerfile
+        volumes:
+            - ./application:/var/www/html
+        restart: on-failure:3
+        expose:
+            - "9000"
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    "SCRIPT_NAME=/ping SCRIPT_FILENAME=/ping REQUEST_METHOD=GET cgi-fcgi -bind -connect 127.0.0.1:9000 | grep pong || exit 1",
+                ]
+            interval: 5s
+            timeout: 3s
+            retries: 3
+        depends_on:
+            upload_pg:
+                condition: service_healthy
+                restart: true
+
+    minio:
+        image: quay.io/minio/minio
+        container_name: soat-minio
+        ports:
+            - 9000:9000
+            - 9001:9001
+        restart: on-failure:3
+        env_file:
+            - ./docker/containers/minio/.env
+        volumes:
+            - minio_data:/data
+        depends_on:
+            upload:
+                condition: service_healthy
+                restart: true
+        command: server /data --console-address ":9001"
+
+    upload_pg:
+        image: postgres:17.5
+        container_name: soat-upload-pg
+        restart: always
+        ports:
+            - 5433:5432
+        env_file:
+            - ./docker/containers/pg/env/.env.dev
+        volumes:
+            - upload_pg_data:/var/lib/postgresql/data
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres"]
+            interval: 5s
+            timeout: 3s
+            retries: 5
+            start_period: 5s
+
+volumes:
+  minio_data:
+  upload_pg_data:
+
+# networks:
+#     default:
+#         external: true
+#         name: soat-net
