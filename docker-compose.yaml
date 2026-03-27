@@ -77,7 +77,7 @@ volumes:
   minio_data:
   upload_pg_data:
 
-# networks:
-#     default:
-#         external: true
-#         name: soat-net
+networks:
+    default:
+        external: true
+        name: soat-net

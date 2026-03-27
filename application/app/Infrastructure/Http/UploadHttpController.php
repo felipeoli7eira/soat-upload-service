@@ -7,13 +7,10 @@ use Throwable;
 use Illuminate\Http\Request;
 use App\Application\Input\FileInput;
 use Illuminate\Validation\Rules\File;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Response as FacadesResponse;
 use Illuminate\Support\Facades\Validator;
 use App\Domain\Exception\DomainHttpException;
-use App\Infrastructure\FileStorage\MinioFileStorage;
 use App\Infrastructure\Repository\PostgresLaravelEloquentRepository;
-use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 final class UploadHttpController extends BaseHttpController
@@ -33,7 +30,7 @@ final class UploadHttpController extends BaseHttpController
                     ],
                 ],
                 [
-                    "diagram.required" => "É obrigatório um arquivo (imagem ou pdf) de diagrama para análise.",
+                    "diagram.required" => "É obrigatório um arquivo (.jpg|.jpeg|.png ou pdf) de diagrama para análise.",
                     "diagram.file"     => "Arquivo inválido.",
                     "diagram.max"      => "Arquivo muito grande.",
                     "diagram.types"    => "Arquivo inválido. Envie um arquivo JPG, JPEG, PNG ou PDF.",
