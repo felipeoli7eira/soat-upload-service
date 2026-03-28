@@ -10,12 +10,15 @@ use Illuminate\Validation\Rules\File;
 use Illuminate\Support\Facades\Response as FacadesResponse;
 use Illuminate\Support\Facades\Validator;
 use App\Domain\Exception\DomainHttpException;
+use App\Infrastructure\Queue\RabbitMQ;
 use App\Infrastructure\Repository\PostgresLaravelEloquentRepository;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
 final class UploadHttpController extends BaseHttpController
 {
+    public function __construct(public readonly RabbitMQ $messageBroker) {}
+
     public function upload(Request $request)
     {
         try {
@@ -61,6 +64,17 @@ final class UploadHttpController extends BaseHttpController
                     $file->extension()
                 ));
             });
+
+            if (is_array($response)) {
+                $this->messageBroker->publishUpload([
+                    "protocol"           => $response["protocol_uuid"],
+                    "file_original_name" => $response["original_name"],
+                    "file_unique_name"   => $response["unique_name"],
+                    "file_mime_type"     => $response["mime_type"],
+                    "file_size"          => $response["size"],
+                    "storage_endpoint"   => $response["endpoint"],
+                ]);
+            }
         } catch (DomainHttpException $err) {
             return FacadesResponse::json(
                 $this->error(
@@ -93,7 +107,12 @@ final class UploadHttpController extends BaseHttpController
 
         return FacadesResponse::json(
             $this->success([
-                "protocolo" => $response["protocol_uuid"]
+                "protocol"           => $response["protocol_uuid"],
+                "file_original_name" => $response["original_name"],
+                "file_unique_name"   => $response["unique_name"],
+                "file_mime_type"     => $response["mime_type"],
+                "file_size"          => $response["size"],
+                "storage_endpoint"   => $response["endpoint"],
             ], "Arquivo recebido com sucesso"),
         );
     }

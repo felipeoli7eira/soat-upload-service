@@ -93,6 +93,6 @@ class UploadFileUseCase
             throw new DomainHttpException("Erro ao salvar o upload", 500);
         }
 
-        return $file;
+        return [...$file, ...$upload];
     }
 }

@@ -12,13 +12,16 @@ class MessageBrokerSetup extends Command
     protected $signature = 'queue:setup';
     protected $description = 'Starts the necessary configurations for the Message Broker that the application is using (initially designed to use RabbitMQ).';
 
+    public function __construct(private RabbitMQ $broker)
+    {
+        parent::__construct();
+    }
+
     public function handle()
     {
         try {
             $this->info("Message Broker started.");
-
-            $messageBroker = new RabbitMQ();
-            $messageBroker->setup();
+            $this->broker->setup();
         } catch (AMQPTimeoutException $amqpTimeoutErr) {
 
             $this->error($amqpTimeoutErr->getMessage());
