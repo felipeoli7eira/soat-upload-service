@@ -1,0 +1,87 @@
+{
+  "info": {
+    "_postman_id": "c4c79539-eccf-456c-8059-0e792d2ee801",
+    "name": "soat-upload-ms",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "26486378",
+    "_collection_link": "https://go.postman.co/collection/26486378-c4c79539-eccf-456c-8059-0e792d2ee801?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "ping",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{api}}/ping",
+          "host": [
+            "{{api}}"
+          ],
+          "path": [
+            "ping"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "upload",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "diagram",
+              "description": "Diagrama para análise da I.A",
+              "type": "file",
+              "uuid": "f4261d24-613b-4992-843f-42c57fa40bef",
+              "src": "///wsl.localhost/Ubuntu-24.04/home/foliveira/dev/soat-fase5/upload-service/diagrams/architecture_diagram.pdf"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{api}}/upload",
+          "host": [
+            "{{api}}"
+          ],
+          "path": [
+            "upload"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "api",
+      "value": "http://localhost:8001/api"
+    }
+  ]
+}
