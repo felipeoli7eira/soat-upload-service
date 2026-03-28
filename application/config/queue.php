@@ -76,17 +76,16 @@ return [
             'driver' => 'rabbitmq',
             'hosts'  => [
                 [
-                    'host'     => env('RABBITMQ_HOST', 'soat_queue_worker'),
+                    'host'     => env('RABBITMQ_HOST', ''),
                     'port'     => env('RABBITMQ_PORT', 5672),
-                    'user'     => env('RABBITMQ_USER', 'user'),
-                    'password' => env('RABBITMQ_PASSWORD', 'password'),
+                    'user'     => env('RABBITMQ_USER', 'guest'),
+                    'password' => env('RABBITMQ_PASSWORD', 'guest'),
                     'vhost'    => env('RABBITMQ_VHOST', '/'),
                 ],
             ],
 
             'options' => []
         ],
-
     ],
 
     /*

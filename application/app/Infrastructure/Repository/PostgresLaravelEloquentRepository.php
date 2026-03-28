@@ -3,8 +3,8 @@
 namespace App\Infrastructure\Repository;
 
 use App\Domain\Interface\RepositoryInterface;
-use App\Infrastructure\ModelRepository\File;
-use App\Infrastructure\ModelRepository\Protocol;
+use App\Infrastructure\Repository\Models\File;
+use App\Infrastructure\Repository\Models\Protocol;
 use Illuminate\Support\Str;
 
 final class PostgresLaravelEloquentRepository implements RepositoryInterface
