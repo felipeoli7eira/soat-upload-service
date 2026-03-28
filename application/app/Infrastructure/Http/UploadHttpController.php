@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Response as FacadesResponse;
 use Illuminate\Support\Facades\Validator;
 use App\Domain\Exception\DomainHttpException;
 use App\Infrastructure\Repository\PostgresLaravelEloquentRepository;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
 final class UploadHttpController extends BaseHttpController
@@ -47,15 +48,19 @@ final class UploadHttpController extends BaseHttpController
 
             $file = $validated->validated()["diagram"];
 
-            $uploadController = new UploadController(new PostgresLaravelEloquentRepository());
+            $response = null;
 
-            $response = $uploadController->upload(new FileInput(
-                $file->getRealPath(),
-                $file->getSize(),
-                $file->getClientOriginalName(),
-                $file->getClientMimeType(),
-                $file->extension()
-            ));
+            DB::transaction(function () use (&$file, &$response) {
+                $uploadController = new UploadController(new PostgresLaravelEloquentRepository());
+
+                $response = $uploadController->upload(new FileInput(
+                    $file->getRealPath(),
+                    $file->getSize(),
+                    $file->getClientOriginalName(),
+                    $file->getClientMimeType(),
+                    $file->extension()
+                ));
+            });
         } catch (DomainHttpException $err) {
             return FacadesResponse::json(
                 $this->error(
@@ -77,6 +82,12 @@ final class UploadHttpController extends BaseHttpController
                     $err->getMessage(),
                 ),
                 Response::HTTP_INTERNAL_SERVER_ERROR,
+            );
+        }
+
+        if (is_null($response)) {
+            return FacadesResponse::json(
+                $this->error([], "Erro ao criar um fazer salvar o arquivo e gerar um protocolo."),
             );
         }
 

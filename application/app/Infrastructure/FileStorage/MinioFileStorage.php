@@ -19,7 +19,7 @@ class MinioFileStorage implements FileStorage
         $uploadName = Storage::put("", new File($data["path"]), $options);
 
         if (is_string($uploadName) === false) {
-            throw new DomainHttpException("Erro ao fazer upload do arquivo.", 500);
+            throw new DomainHttpException("Erro ao fazer upload do arquivo. O storage está fora do ar? o Bucket está configurado corretamente?", 500);
         }
 
         return [

@@ -39,8 +39,8 @@ php artisan queue:setup || {
     exit 1
 }
 
-# echo "🆙 Preparando banco de dados"
-# composer run post-create-project-cmd
+echo "Preparando banco de dados..."
+composer run post-create-project-cmd
 
 
 # echo "Preparando filas"
