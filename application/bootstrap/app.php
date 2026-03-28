@@ -18,4 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })
+    ->withCommands([
+        __DIR__ . "/../app/Infrastructure/Console/Commands/",
+    ])
     ->create();

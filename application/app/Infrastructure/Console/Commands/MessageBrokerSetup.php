@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Infrastructure\Console\Commands;
 
 use App\Infrastructure\Queue\RabbitMQ;
 use Illuminate\Console\Command;
 use PhpAmqpLib\Exception\AMQPTimeoutException;
 use Throwable;
 
-class MessageBroker extends Command
+class MessageBrokerSetup extends Command
 {
-    protected $signature = 'domain:queue';
+    protected $signature = 'queue:setup';
     protected $description = 'Starts the necessary configurations for the Message Broker that the application is using (initially designed to use RabbitMQ).';
 
     public function handle()

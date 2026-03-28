@@ -33,6 +33,12 @@ if [ ! -f .env ]; then
     # php artisan jwt:secret --force
 fi
 
+# Configuracoes do message broker (rabbitMQ). Criacao das exchanges, filas e tudo que for necessario
+php artisan queue:setup || {
+    echo "Falha na configuracao do message broker (rabbitMQ). O servico esta acessivel e configurado?"
+    exit 1
+}
+
 # echo "🆙 Preparando banco de dados"
 # composer run post-create-project-cmd
 
