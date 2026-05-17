@@ -23,8 +23,25 @@ class MinioFileStorage implements FileStorage
         }
 
         return [
-            "endpoint"   => Storage::url($uploadName),
+            "endpoint"   => $this->endpoint($uploadName),
             "uniqueName" => $options["name"]
         ];
+    }
+
+    private function endpoint(string $objectKey): string
+    {
+        $disk = config("filesystems.default");
+        $baseUrl = config("filesystems.disks.{$disk}.url");
+        $bucket = config("filesystems.disks.{$disk}.bucket");
+
+        if (empty($baseUrl) || empty($bucket)) {
+            return Storage::url($objectKey);
+        }
+
+        return implode("/", [
+            rtrim($baseUrl, "/"),
+            trim($bucket, "/"),
+            ltrim($objectKey, "/"),
+        ]);
     }
 }
