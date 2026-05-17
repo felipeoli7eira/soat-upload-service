@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Queue;
 
+use App\Infrastructure\Observability\OtelContext;
 use Exception;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
@@ -137,6 +138,7 @@ class RabbitMQ
             msg: new AMQPMessage(json_encode($messagePayload), [
                 'content_type'  => 'application/json',
                 'delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT, // ! IMPORTANTE: persiste no disco
+                'application_headers' => new AMQPTable(OtelContext::propagationHeaders()),
             ]),
 
             exchange: "uploads_exchange",
