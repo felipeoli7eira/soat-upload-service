@@ -32,7 +32,7 @@ final class PostgresLaravelEloquentRepository implements RepositoryInterface
             "unique_name"   => $data["unique_name"],
             "mime_type"     => $data["mime_type"],
             "size"          => $data["size"],
-            "storage_url"   => $data["protocol_uuid"],
+            "storage_url"   => $data["storage_url"],
         ]);
 
         return $save->toArray();

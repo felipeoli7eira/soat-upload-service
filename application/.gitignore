@@ -24,3 +24,5 @@ Homestead.yaml
 Thumbs.db
 /var
 *.sqlite
+/coverage
+/.phpunit.result.cache
