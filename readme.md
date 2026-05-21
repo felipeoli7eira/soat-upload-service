@@ -2,6 +2,14 @@
 
 Microsserviço responsável por receber arquivos de diagrama (JPG, JPEG, PNG ou PDF), armazená-los no MinIO e publicar uma mensagem no RabbitMQ para iniciar o fluxo de análise.
 
+## Alunos
+
+| Aluno | RM | Discord | LinkedIn |
+|---|---|---|---|
+| Felipe | 365154 | felipeoli7eira | [@felipeoli7eira](https://www.linkedin.com/in/felipeoli7eira) |
+| Nicolas | 365746 | nic_hcm | [@Nicolas Martins](https://www.linkedin.com/in/nicolas-hcm) |
+| William | 365973 | wllsistemas | [@William Francisco Leite](https://www.linkedin.com/in/williamfranciscoleite) |
+
 ---
 
 ## Arquitetura
