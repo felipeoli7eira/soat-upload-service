@@ -5,7 +5,6 @@ namespace Tests;
 use App\Infrastructure\Queue\RabbitMQ;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use Illuminate\Support\Facades\Http;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -13,9 +12,9 @@ abstract class TestCase extends BaseTestCase
 
     protected ?string $authToken = null;
 
-    protected function setUp(): void
+    protected function refreshApplication(): void
     {
-        parent::setUp();
-        $this->mock(RabbitMQ::class);
+        parent::refreshApplication();
+        $this->app->singleton(RabbitMQ::class, fn () => \Mockery::mock(RabbitMQ::class)->shouldIgnoreMissing());
     }
 }
