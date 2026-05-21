@@ -12,7 +12,27 @@ Microsserviço responsável por receber arquivos de diagrama (JPG, JPEG, PNG ou 
 
 ---
 
-## Arquitetura
+## Descrição do Problema
+
+O sistema tem como objetivo automatizar a análise de diagramas de arquitetura de software por meio de Inteligência Artificial. Equipes de engenharia submetem diagramas (JPG, JPEG, PNG ou PDF) e recebem, de forma assíncrona, um relatório com **componentes identificados**, **riscos** e **recomendações** de melhoria — eliminando a necessidade de revisão manual.
+
+---
+
+## Arquitetura Proposta
+
+O sistema é composto por cinco microsserviços interligados:
+
+| Serviço | Papel |
+|---|---|
+| **BFF** | Ponto de entrada unificado; orquestra chamadas aos serviços internos |
+| **upload-service** *(este serviço)* | Recebe diagramas, armazena no Amazon S3, publica na fila `protocols` |
+| **trigger-service** | Consome a fila, aciona a IA e persiste resultados no PostgreSQL |
+| **report-service** | Consulta resultados e gera relatório em PDF |
+| **RabbitMQ** | Broker de mensagens para comunicação assíncrona |
+
+> Diagrama interativo: [FIAP - HACKATON FASE 5](https://www.tldraw.com/f/CPYtIC_xwtcfbSCH4vgkT?d=v567.4.3513.1667.page)
+
+### Arquitetura Interna
 
 O projeto segue **Clean Architecture** com separação clara entre as camadas:
 
@@ -23,6 +43,23 @@ app/
 ├── Infrastructure/  # Implementações concretas (MinIO, PostgreSQL, RabbitMQ, HTTP)
 └── Http/            # Middleware
 ```
+
+---
+
+## Fluxo da Solução
+
+**Envio para análise:**
+1. Usuário envia diagrama via `POST /api/upload` no BFF
+2. BFF repassa ao **upload-service**, que armazena no Amazon S3
+3. **upload-service** publica `{ protocol_uuid, file_url, ... }` na fila `protocols` do RabbitMQ
+4. **trigger-service** consome a mensagem e aciona o **Analysis Service (IA)**
+5. IA processa e publica o resultado na fila `analysis_response`
+6. **trigger-service** persiste o resultado no PostgreSQL (`SUCESSO` ou `ERRO`)
+
+**Consulta do resultado:**
+1. Usuário consulta status via `GET /api/status/{uuid}` no BFF
+2. Usuário solicita relatório via `GET /api/report/{uuid}` no BFF
+3. **report-service** busca os dados no **trigger-service** e gera o PDF
 
 ---
 
