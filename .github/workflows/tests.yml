@@ -26,9 +26,21 @@ jobs:
 
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist
+        env:
+          RABBITMQ_HOST: localhost
+          RABBITMQ_PORT: 5672
+          RABBITMQ_USER: guest
+          RABBITMQ_PASSWORD: guest
+          RABBITMQ_VHOST: /
 
       - name: Run tests with coverage
         run: vendor/bin/phpunit --coverage-clover coverage/clover.xml
+        env:
+          RABBITMQ_HOST: localhost
+          RABBITMQ_PORT: 5672
+          RABBITMQ_USER: guest
+          RABBITMQ_PASSWORD: guest
+          RABBITMQ_VHOST: /
 
       - name: Check minimum coverage of 85%
         run: |
