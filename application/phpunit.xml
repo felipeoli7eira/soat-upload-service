@@ -44,6 +44,18 @@
     <php>
         <env name="APP_ENV"
              value="testing" />
+        <env name="APP_KEY"
+             value="base64:3fBcWUvCUWsQ6JI26yXLHxq50KGBEmJDDtzL/8W1BeA=" />
+        <env name="RABBITMQ_HOST"
+             value="localhost" />
+        <env name="RABBITMQ_PORT"
+             value="5672" />
+        <env name="RABBITMQ_USER"
+             value="guest" />
+        <env name="RABBITMQ_PASSWORD"
+             value="guest" />
+        <env name="RABBITMQ_VHOST"
+             value="/" />
         <env name="APP_MAINTENANCE_DRIVER"
              value="file" />
         <env name="BCRYPT_ROUNDS"
