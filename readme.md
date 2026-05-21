@@ -63,6 +63,46 @@ app/
 
 ---
 
+## Segurança
+
+### Requisitos básicos adotados
+
+- **Credenciais via variáveis de ambiente**: senhas e chaves de acesso são injetadas via `.env`, nunca hardcoded no código
+- **Rede Docker isolada** (`soat-net`): apenas o BFF expõe porta pública; os demais serviços são acessíveis somente internamente
+
+### Validação e tratamento de entradas não confiáveis
+
+- Tipo MIME e extensão do arquivo validados na camada de Application (aceita apenas `image/jpeg`, `image/png`, `application/pdf`)
+- Tamanho máximo de **2 MB** por arquivo, prevenindo abuso de recursos
+- Arquivos **renomeados com UUID** antes do armazenamento — elimina path traversal e conflitos de nome
+- Arquivo armazenado como blob no MinIO/S3 e **nunca executado** pelo servidor
+
+### Uso controlado do modelo de IA
+
+- Este serviço não se comunica diretamente com a IA — publica apenas um evento estruturado na fila `protocols` com `protocol_uuid`, `file_url` e metadados do arquivo
+- Nenhum dado pessoal do usuário é incluído no payload publicado
+- O escopo do que a IA recebe é controlado pelo **trigger-service**
+
+### Tratamento de falhas e comportamentos inesperados da IA
+
+- Falhas no processamento pela IA não afetam este serviço — a comunicação é assíncrona via RabbitMQ
+- A **Dead Letter Queue (DLQ)** captura mensagens que falharam no processamento downstream, evitando perda de eventos
+
+### Comunicação entre serviços
+
+- **Rede Docker interna** (`soat-net`): este serviço não é acessível externamente
+- **Mensagens persistentes** no RabbitMQ (`delivery_mode: persistent`): eventos não são perdidos em reinicializações do broker
+- Comunicação assíncrona isola falhas — indisponibilidade do trigger-service não derruba o upload
+
+### Riscos e limitações conhecidos
+
+| Risco | Impacto | Mitigação atual |
+|---|---|---|
+| Conteúdo interno do arquivo não é inspecionado (vírus scan) | Arquivo corrompido ou malformado pode ser armazenado | Arquivo nunca é executado; armazenado como blob no S3/MinIO |
+| Volume elevado de uploads simultâneos | Aumento de carga nos serviços downstream | Limite de tamanho (2 MB) e validação de tipo MIME por requisição |
+
+---
+
 ## Pré-requisitos
 
 - Docker e Docker Compose
